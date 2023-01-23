@@ -1,0 +1,25 @@
+{
+	"name": "trigger_8_30_am",
+	"properties": {
+		"annotations": [],
+		"runtimeState": "Started",
+		"pipelines": [],
+		"type": "ScheduleTrigger",
+		"typeProperties": {
+			"recurrence": {
+				"frequency": "Day",
+				"interval": 1,
+				"startTime": "2023-01-23T18:46:00",
+				"timeZone": "E. South America Standard Time",
+				"schedule": {
+					"minutes": [
+						30
+					],
+					"hours": [
+						8
+					]
+				}
+			}
+		}
+	}
+}
