@@ -11,7 +11,6 @@
 			"location": {
 				"type": "AzureBlobFSLocation",
 				"fileName": "5m-Sales-Records.zip",
-				"folderPath": "sales",
 				"fileSystem": "landing"
 			},
 			"compression": {
