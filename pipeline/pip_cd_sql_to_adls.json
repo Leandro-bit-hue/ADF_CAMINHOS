@@ -7,7 +7,7 @@
 				"type": "Copy",
 				"dependsOn": [
 					{
-						"activity": "Lookup1",
+						"activity": "LastModified",
 						"dependencyConditions": [
 							"Succeeded"
 						]
@@ -74,7 +74,7 @@
 				]
 			},
 			{
-				"name": "Lookup1",
+				"name": "LastModified",
 				"type": "Lookup",
 				"dependsOn": [],
 				"policy": {
@@ -88,7 +88,7 @@
 				"typeProperties": {
 					"source": {
 						"type": "AzureSqlSource",
-						"sqlReaderQuery": "select * from ",
+						"sqlReaderQuery": "select isnull(Last_Modified,'1900-01-01') Last_Modified from dbo.watermark where table_name = '@{pipeline().parameters.table_name_par}'",
 						"queryTimeout": "02:00:00",
 						"partitionOption": "None"
 					},
