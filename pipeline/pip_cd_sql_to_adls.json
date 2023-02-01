@@ -71,7 +71,7 @@
 				"type": "Copy",
 				"dependsOn": [
 					{
-						"activity": "Wait1",
+						"activity": "If Condition1",
 						"dependencyConditions": [
 							"Succeeded"
 						]
@@ -227,10 +227,29 @@
 					"scripts": [
 						{
 							"type": "Query",
-							"text": "Upate dbo.watermark\nset Last_Modified = '@(variables('max_valor_escrito')}'\nwhere table_name = '@(pipeline().parameters.table_name_par'})\n\n\n"
+							"text": "update dbo.watermark\nset Last_Modified = '@{variables('max_valor_escrito')}'\nwhere table_name = '@{pipeline().parameters.table_name_par}'\n\n\n\n\n\n\n\n\n\n"
 						}
 					],
 					"scriptBlockExecutionTimeout": "02:00:00"
+				}
+			},
+			{
+				"name": "If Condition1",
+				"type": "IfCondition",
+				"dependsOn": [
+					{
+						"activity": "Wait1",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"userProperties": [],
+				"typeProperties": {
+					"expression": {
+						"value": "@equals(variables('Last_modified'),variables('max_valor_escrito'))",
+						"type": "Expression"
+					}
 				}
 			}
 		],
