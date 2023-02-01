@@ -88,11 +88,28 @@
 				"typeProperties": {
 					"source": {
 						"type": "AzureSqlSource",
-						"sqlReaderQuery": "select * from @{pipeline().parameters.schema_par}.@{pipeline().parameters.table_name_par} where ModifiedDate >  and ModifiedDate <=\r\n\r\n\r\n\r\n",
+						"sqlReaderQuery": "select * from @{pipeline().parameters.schema_par}.@{pipeline().parameters.table_name_par}\nwhere ModifiedDate > '@{variables('last_modified')}'\nand ModifiedDate <= '@{variables('max_valor_escrito')}'",
 						"queryTimeout": "02:00:00",
 						"partitionOption": "None"
 					},
-					"enableStaging": false
+					"sink": {
+						"type": "ParquetSink",
+						"storeSettings": {
+							"type": "AzureBlobFSWriteSettings"
+						},
+						"formatSettings": {
+							"type": "ParquetWriteSettings"
+						}
+					},
+					"enableStaging": false,
+					"translator": {
+						"type": "TabularTranslator",
+						"typeConversion": true,
+						"typeConversionSettings": {
+							"allowDataTruncation": true,
+							"treatBooleanAsNumber": false
+						}
+					}
 				},
 				"inputs": [
 					{
@@ -101,6 +118,22 @@
 						"parameters": {
 							"ds_name_table": "Product",
 							"ds_schema_table": "salesLT"
+						}
+					}
+				],
+				"outputs": [
+					{
+						"referenceName": "Parquet1",
+						"type": "DatasetReference",
+						"parameters": {
+							"ds_container": {
+								"value": "@pipeline().parameters.container_par",
+								"type": "Expression"
+							},
+							"ds_directory": {
+								"value": "@pipeline().parameters.directory_par",
+								"type": "Expression"
+							}
 						}
 					}
 				]
@@ -166,20 +199,57 @@
 				"typeProperties": {
 					"waitTimeInSeconds": 1
 				}
+			},
+			{
+				"name": "Update_watermark",
+				"type": "Script",
+				"dependsOn": [
+					{
+						"activity": "Copy data1",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"policy": {
+					"timeout": "0.12:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"linkedServiceName": {
+					"referenceName": "s_AzureSqlDatabase1",
+					"type": "LinkedServiceReference"
+				},
+				"typeProperties": {
+					"scripts": [
+						{
+							"type": "Query",
+							"text": "Upate dbo.watermark\nset Last_Modified = '@(variables('max_valor_escrito')}'\nwhere table_name = @pipeline().parameters.table_name_par\n\n\n"
+						}
+					],
+					"scriptBlockExecutionTimeout": "02:00:00"
+				}
 			}
 		],
 		"parameters": {
 			"schema_par": {
-				"type": "string"
+				"type": "string",
+				"defaultValue": "salesLT"
 			},
 			"table_name_par": {
-				"type": "string"
+				"type": "string",
+				"defaultValue": "Product"
 			},
 			"container_par": {
-				"type": "string"
+				"type": "string",
+				"defaultValue": "landing"
 			},
 			"directory_par": {
-				"type": "string"
+				"type": "string",
+				"defaultValue": "Adventureworks/incremental/Product"
 			}
 		},
 		"variables": {
