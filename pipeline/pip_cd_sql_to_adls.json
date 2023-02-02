@@ -235,7 +235,34 @@
 					"expression": {
 						"value": "@equals(variables('Last_modified'),variables('max_valor_escrito'))",
 						"type": "Expression"
-					}
+					},
+					"ifTrueActivities": [
+						{
+							"name": "Web",
+							"type": "WebActivity",
+							"dependsOn": [],
+							"policy": {
+								"timeout": "0.12:00:00",
+								"retry": 0,
+								"retryIntervalInSeconds": 30,
+								"secureOutput": false,
+								"secureInput": false
+							},
+							"userProperties": [],
+							"typeProperties": {
+								"url": "",
+								"method": "POST",
+								"body": {
+									"RUN_ID": "@{pipeline().RunId}",
+									"TABLE_NAME": "@{pipeline().parameters.table_name_par}",
+									"TIMESTAMP": "@{utcnow()}",
+									"ERRODESCRIPTION": "NAO EXISTE NOVOS REGISTROS PARA ESTA TABELA",
+									"TO": "manfriniti@gmail.com",
+									"SUBJECT": "INGESTAO DIARIA"
+								}
+							}
+						}
+					]
 				}
 			}
 		],
