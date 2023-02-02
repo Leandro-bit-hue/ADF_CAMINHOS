@@ -1,0 +1,9 @@
+{
+	"name": "adf-learning-desafio",
+	"location": "eastus2",
+	"identity": {
+		"type": "SystemAssigned",
+		"principalId": "86a1188d-1b62-40e6-8f05-96fcd1431871",
+		"tenantId": "cf36141c-ddd7-45a7-b073-111f66d0b30c"
+	}
+}
