@@ -2,7 +2,7 @@
 	"name": "Parquet1",
 	"properties": {
 		"linkedServiceName": {
-			"referenceName": "AzureDataLakeStorage1",
+			"referenceName": "l_s_AzureDataLakeStorage",
 			"type": "LinkedServiceReference"
 		},
 		"parameters": {
@@ -18,14 +18,8 @@
 		"typeProperties": {
 			"location": {
 				"type": "AzureBlobFSLocation",
-				"folderPath": {
-					"value": "@dataset().ds_directory",
-					"type": "Expression"
-				},
-				"fileSystem": {
-					"value": "@dataset().ds_container",
-					"type": "Expression"
-				}
+				"folderPath": "Adventure/SalesBike",
+				"fileSystem": "landing"
 			},
 			"compressionCodec": "snappy"
 		},
