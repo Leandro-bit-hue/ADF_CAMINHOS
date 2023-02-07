@@ -1,0 +1,19 @@
+{
+	"name": "Binary_generic",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "l_s_AzureDataLakeStorage",
+			"type": "LinkedServiceReference"
+		},
+		"annotations": [],
+		"type": "Binary",
+		"typeProperties": {
+			"location": {
+				"type": "AzureBlobFSLocation",
+				"fileName": "5m-Sales-Records.zip",
+				"folderPath": "sales",
+				"fileSystem": "landing"
+			}
+		}
+	}
+}
