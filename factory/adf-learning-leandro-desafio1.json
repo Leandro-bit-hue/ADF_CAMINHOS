@@ -1,0 +1,9 @@
+{
+	"name": "adf-learning-leandro-desafio1",
+	"location": "eastus2",
+	"identity": {
+		"type": "SystemAssigned",
+		"principalId": "1f25674a-d118-45e0-aefb-839639b2b6b3",
+		"tenantId": "cf36141c-ddd7-45a7-b073-111f66d0b30c"
+	}
+}
