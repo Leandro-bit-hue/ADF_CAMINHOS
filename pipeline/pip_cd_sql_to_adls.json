@@ -23,20 +23,6 @@
 						},
 						"queryTimeout": "02:00:00",
 						"partitionOption": "None"
-					},
-					"dataset": {
-						"referenceName": "AzureSqlTable1",
-						"type": "DatasetReference",
-						"parameters": {
-							"ds_name_table": {
-								"value": "@pipeline().parameters.table_name_par",
-								"type": "Expression"
-							},
-							"ds_schema_table": {
-								"value": "@pipeline().parameters.schema_par",
-								"type": "Expression"
-							}
-						}
 					}
 				}
 			},
@@ -61,14 +47,6 @@
 						},
 						"queryTimeout": "02:00:00",
 						"partitionOption": "None"
-					},
-					"dataset": {
-						"referenceName": "AzureSqlTable1",
-						"type": "DatasetReference",
-						"parameters": {
-							"ds_name_table": "Product",
-							"ds_schema_table": "salesLT"
-						}
 					}
 				}
 			},
@@ -103,42 +81,8 @@
 							"type": "ParquetWriteSettings"
 						}
 					},
-					"enableStaging": false,
-					"translator": {
-						"type": "TabularTranslator",
-						"typeConversion": true,
-						"typeConversionSettings": {
-							"allowDataTruncation": true,
-							"treatBooleanAsNumber": false
-						}
-					}
-				},
-				"inputs": [
-					{
-						"referenceName": "AzureSqlTable1",
-						"type": "DatasetReference",
-						"parameters": {
-							"ds_name_table": "Product",
-							"ds_schema_table": "salesLT"
-						}
-					}
-				],
-				"outputs": [
-					{
-						"referenceName": "Parquet1",
-						"type": "DatasetReference",
-						"parameters": {
-							"ds_container": {
-								"value": "@pipeline().parameters.container_par",
-								"type": "Expression"
-							},
-							"ds_directory": {
-								"value": "@pipeline().parameters.directory_par",
-								"type": "Expression"
-							}
-						}
-					}
-				]
+					"enableStaging": false
+				}
 			},
 			{
 				"name": "Set ultimo valor lido",
@@ -214,10 +158,6 @@
 					"secureInput": false
 				},
 				"userProperties": [],
-				"linkedServiceName": {
-					"referenceName": "s_AzureSqlDatabase1",
-					"type": "LinkedServiceReference"
-				},
 				"typeProperties": {
 					"scripts": [
 						{
