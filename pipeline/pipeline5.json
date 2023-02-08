@@ -16,17 +16,9 @@
 				"userProperties": [],
 				"typeProperties": {
 					"source": {
-						"type": "BinarySource",
-						"storeSettings": {
-							"type": "AzureBlobFSReadSettings",
-							"recursive": true
-						},
-						"formatSettings": {
-							"type": "BinaryReadSettings",
-							"compressionProperties": {
-								"type": "ZipDeflateReadSettings"
-							}
-						}
+						"type": "AzureSqlSource",
+						"queryTimeout": "02:00:00",
+						"partitionOption": "None"
 					},
 					"sink": {
 						"type": "ParquetSink",
@@ -37,12 +29,30 @@
 							"type": "ParquetWriteSettings"
 						}
 					},
-					"enableStaging": false
+					"enableStaging": false,
+					"translator": {
+						"type": "TabularTranslator",
+						"typeConversion": true,
+						"typeConversionSettings": {
+							"allowDataTruncation": true,
+							"treatBooleanAsNumber": false
+						}
+					}
 				},
 				"inputs": [
 					{
-						"referenceName": "Binary",
-						"type": "DatasetReference"
+						"referenceName": "AzureSqlTable",
+						"type": "DatasetReference",
+						"parameters": {
+							"ds_name_table": {
+								"value": "@pipeline().parameters.table_name_par",
+								"type": "Expression"
+							},
+							"ds_schema_table": {
+								"value": "@pipeline().parameters.schema_par",
+								"type": "Expression"
+							}
+						}
 					}
 				],
 				"outputs": [
@@ -53,6 +63,14 @@
 				]
 			}
 		],
+		"parameters": {
+			"schema_par": {
+				"type": "string"
+			},
+			"table_name_par": {
+				"type": "string"
+			}
+		},
 		"annotations": []
 	}
 }
