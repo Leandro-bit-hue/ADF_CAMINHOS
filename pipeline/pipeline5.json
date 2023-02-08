@@ -1,5 +1,5 @@
 {
-	"name": "pip_copy_data_zip",
+	"name": "pipeline5",
 	"properties": {
 		"activities": [
 			{
@@ -29,9 +29,12 @@
 						}
 					},
 					"sink": {
-						"type": "BinarySink",
+						"type": "ParquetSink",
 						"storeSettings": {
 							"type": "AzureBlobFSWriteSettings"
+						},
+						"formatSettings": {
+							"type": "ParquetWriteSettings"
 						}
 					},
 					"enableStaging": false
@@ -39,6 +42,12 @@
 				"inputs": [
 					{
 						"referenceName": "Binary",
+						"type": "DatasetReference"
+					}
+				],
+				"outputs": [
+					{
+						"referenceName": "Parquet",
 						"type": "DatasetReference"
 					}
 				]
