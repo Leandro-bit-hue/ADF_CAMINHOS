@@ -1,5 +1,5 @@
 {
-	"name": "pipeline5",
+	"name": "pip_cd_sql_to_adls1",
 	"properties": {
 		"activities": [
 			{
@@ -58,7 +58,17 @@
 				"outputs": [
 					{
 						"referenceName": "Parquet",
-						"type": "DatasetReference"
+						"type": "DatasetReference",
+						"parameters": {
+							"ds_container": {
+								"value": "@pipeline().parameters.container_par",
+								"type": "Expression"
+							},
+							"ds_directory": {
+								"value": "@pipeline().parameters.directory_par",
+								"type": "Expression"
+							}
+						}
 					}
 				]
 			}
@@ -68,6 +78,12 @@
 				"type": "string"
 			},
 			"table_name_par": {
+				"type": "string"
+			},
+			"container_par": {
+				"type": "string"
+			},
+			"directory_par": {
 				"type": "string"
 			}
 		},
