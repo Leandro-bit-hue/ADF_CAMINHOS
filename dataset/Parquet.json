@@ -1,18 +1,18 @@
 {
-	"name": "Binary_generic",
+	"name": "Parquet",
 	"properties": {
 		"linkedServiceName": {
 			"referenceName": "ls_AzureDataLakeStorageDesafio",
 			"type": "LinkedServiceReference"
 		},
 		"annotations": [],
-		"type": "Binary",
+		"type": "Parquet",
 		"typeProperties": {
 			"location": {
-				"type": "AzureBlobFSLocation",
-				"fileName": "5m-Sales-Records.zip",
-				"fileSystem": "landing"
-			}
-		}
+				"type": "AzureBlobFSLocation"
+			},
+			"compressionCodec": "snappy"
+		},
+		"schema": []
 	}
 }

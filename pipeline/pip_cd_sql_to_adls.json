@@ -23,6 +23,10 @@
 						},
 						"queryTimeout": "02:00:00",
 						"partitionOption": "None"
+					},
+					"dataset": {
+						"referenceName": "AzureSqlTable",
+						"type": "DatasetReference"
 					}
 				}
 			},
@@ -47,6 +51,10 @@
 						},
 						"queryTimeout": "02:00:00",
 						"partitionOption": "None"
+					},
+					"dataset": {
+						"referenceName": "AzureSqlTable",
+						"type": "DatasetReference"
 					}
 				}
 			},
@@ -71,15 +79,6 @@
 						},
 						"queryTimeout": "02:00:00",
 						"partitionOption": "None"
-					},
-					"sink": {
-						"type": "ParquetSink",
-						"storeSettings": {
-							"type": "AzureBlobFSWriteSettings"
-						},
-						"formatSettings": {
-							"type": "ParquetWriteSettings"
-						}
 					},
 					"enableStaging": false
 				}
@@ -188,6 +187,92 @@
 						"value": "@equals(variables('Last_modified'),variables('max_valor_escrito'))",
 						"type": "Expression"
 					},
+					"ifFalseActivities": [
+						{
+							"name": "Copy data2",
+							"type": "Copy",
+							"dependsOn": [],
+							"policy": {
+								"timeout": "0.12:00:00",
+								"retry": 0,
+								"retryIntervalInSeconds": 30,
+								"secureOutput": false,
+								"secureInput": false
+							},
+							"userProperties": [],
+							"typeProperties": {
+								"source": {
+									"type": "AzureSqlSource",
+									"sqlReaderQuery": "select * from @{pipeline().parameters.schema_par}.@{pipeline().parameters.table_name_par} where ModifiedDate > '@{variables('last_modified')}'and ModifiedDate <= '@{variables('max_valor_escrito')}'",
+									"queryTimeout": "02:00:00",
+									"partitionOption": "None"
+								},
+								"sink": {
+									"type": "ParquetSink",
+									"storeSettings": {
+										"type": "AzureBlobFSWriteSettings"
+									},
+									"formatSettings": {
+										"type": "ParquetWriteSettings"
+									}
+								},
+								"enableStaging": false,
+								"translator": {
+									"type": "TabularTranslator",
+									"typeConversion": true,
+									"typeConversionSettings": {
+										"allowDataTruncation": true,
+										"treatBooleanAsNumber": false
+									}
+								}
+							},
+							"inputs": [
+								{
+									"referenceName": "AzureSqlTable",
+									"type": "DatasetReference"
+								}
+							],
+							"outputs": [
+								{
+									"referenceName": "Parquet",
+									"type": "DatasetReference"
+								}
+							]
+						},
+						{
+							"name": "Script1",
+							"type": "Script",
+							"dependsOn": [
+								{
+									"activity": "Copy data2",
+									"dependencyConditions": [
+										"Succeeded"
+									]
+								}
+							],
+							"policy": {
+								"timeout": "0.12:00:00",
+								"retry": 0,
+								"retryIntervalInSeconds": 30,
+								"secureOutput": false,
+								"secureInput": false
+							},
+							"userProperties": [],
+							"linkedServiceName": {
+								"referenceName": "AzureSqlDatabase",
+								"type": "LinkedServiceReference"
+							},
+							"typeProperties": {
+								"scripts": [
+									{
+										"type": "NonQuery",
+										"text": "set Last_Modified = '@{variables('max_valor_escrito')}'where table_name = '@{pipeline().parameters.table_name_par}'"
+									}
+								],
+								"scriptBlockExecutionTimeout": "02:00:00"
+							}
+						}
+					],
 					"ifTrueActivities": [
 						{
 							"name": "Web",
