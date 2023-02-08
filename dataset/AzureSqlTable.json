@@ -5,6 +5,16 @@
 			"referenceName": "AzureSqlDatabase",
 			"type": "LinkedServiceReference"
 		},
+		"parameters": {
+			"ds_name_table": {
+				"type": "string",
+				"defaultValue": "Product"
+			},
+			"ds_schema_table": {
+				"type": "string",
+				"defaultValue": "salesLT"
+			}
+		},
 		"annotations": [],
 		"type": "AzureSqlTable",
 		"schema": [
@@ -95,8 +105,14 @@
 			}
 		],
 		"typeProperties": {
-			"schema": "SalesLT",
-			"table": "Product"
+			"schema": {
+				"value": "@dataset().ds_schema_table",
+				"type": "Expression"
+			},
+			"table": {
+				"value": "@dataset().ds_name_table",
+				"type": "Expression"
+			}
 		}
 	}
 }
