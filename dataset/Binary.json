@@ -15,7 +15,7 @@
 				"fileSystem": "landing"
 			},
 			"compression": {
-				"type": "deflate",
+				"type": "ZipDeflate",
 				"level": "Fastest"
 			}
 		}
