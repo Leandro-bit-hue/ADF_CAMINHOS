@@ -98,10 +98,7 @@
 				"typeProperties": {
 					"source": {
 						"type": "AzureSqlSource",
-						"sqlReaderQuery": {
-							"value": "select * from @{pipeline().parameters.schema_par}.@{pipeline().parameters.table_name_par}\nwhere ModifiedDate > '@{variables('last_modified')}'\nand ModifiedDate <= '@{variables('max_valor_escrito')}'",
-							"type": "Expression"
-						},
+						"sqlReaderQuery": "select * from @{pipeline().parameters.schema_par}.@{pipeline().parameters.table_name_par} \r\nwhere ModifiedDate > '@{variables('last_modified')}' and ModifiedDate <= '@{variables('max_valor_escrito')}'",
 						"queryTimeout": "02:00:00",
 						"partitionOption": "None"
 					},
