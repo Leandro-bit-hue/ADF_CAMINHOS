@@ -23,7 +23,11 @@
 					},
 					"dataset": {
 						"referenceName": "AzureSqlTable",
-						"type": "DatasetReference"
+						"type": "DatasetReference",
+						"parameters": {
+							"ds_name_table": "Product",
+							"ds_schema_table": "salesLT"
+						}
 					},
 					"firstRowOnly": true
 				}
@@ -327,6 +331,12 @@
 				"type": "String"
 			},
 			"max_valor_escrito": {
+				"type": "String"
+			},
+			"last_modified": {
+				"type": "String"
+			},
+			"max_valor_esxcrito": {
 				"type": "String"
 			}
 		},
