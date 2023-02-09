@@ -17,7 +17,7 @@
 				"typeProperties": {
 					"source": {
 						"type": "AzureSqlSource",
-						"sqlReaderQuery": "select * from @{pipeline().parameters.schema_par}.@{pipeline().parameters.table_name_par} \r\nwhere ModifiedDate > '@{variables('last_modified')}'and ModifiedDate <= '@{variables('max_valor_escrito')}'",
+						"sqlReaderQuery": "select isnull(Last_Modified,'1900-01-01') Last_Modified from dbo.watermark where table_name = '@{pipeline().parameters.table_name_par}'",
 						"queryTimeout": "02:00:00",
 						"partitionOption": "None"
 					},
@@ -25,8 +25,14 @@
 						"referenceName": "AzureSqlTable",
 						"type": "DatasetReference",
 						"parameters": {
-							"ds_name_table": "Product",
-							"ds_schema_table": "salesLT"
+							"ds_name_table": {
+								"value": "@pipeline().parameters.table_name_par",
+								"type": "Expression"
+							},
+							"ds_schema_table": {
+								"value": "@pipeline().parameters.schema_par",
+								"type": "Expression"
+							}
 						}
 					},
 					"firstRowOnly": true
@@ -56,14 +62,31 @@
 					},
 					"dataset": {
 						"referenceName": "AzureSqlTable",
-						"type": "DatasetReference"
+						"type": "DatasetReference",
+						"parameters": {
+							"ds_name_table": {
+								"value": "@pipeline().parameters.table_name_par",
+								"type": "Expression"
+							},
+							"ds_schema_table": {
+								"value": "@pipeline().parameters.schema_par",
+								"type": "Expression"
+							}
+						}
 					}
 				}
 			},
 			{
 				"name": "Copy data1",
 				"type": "Copy",
-				"dependsOn": [],
+				"dependsOn": [
+					{
+						"activity": "Wait1",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
 				"policy": {
 					"timeout": "0.12:00:00",
 					"retry": 0,
@@ -82,8 +105,57 @@
 						"queryTimeout": "02:00:00",
 						"partitionOption": "None"
 					},
-					"enableStaging": false
-				}
+					"sink": {
+						"type": "ParquetSink",
+						"storeSettings": {
+							"type": "AzureBlobFSWriteSettings"
+						},
+						"formatSettings": {
+							"type": "ParquetWriteSettings"
+						}
+					},
+					"enableStaging": false,
+					"translator": {
+						"type": "TabularTranslator",
+						"typeConversion": true,
+						"typeConversionSettings": {
+							"allowDataTruncation": true,
+							"treatBooleanAsNumber": false
+						}
+					}
+				},
+				"inputs": [
+					{
+						"referenceName": "AzureSqlTable",
+						"type": "DatasetReference",
+						"parameters": {
+							"ds_name_table": {
+								"value": "@pipeline().parameters.table_name_par",
+								"type": "Expression"
+							},
+							"ds_schema_table": {
+								"value": "@pipeline().parameters.schema_par",
+								"type": "Expression"
+							}
+						}
+					}
+				],
+				"outputs": [
+					{
+						"referenceName": "Parquet",
+						"type": "DatasetReference",
+						"parameters": {
+							"ds_container": {
+								"value": "@pipeline().parameters.container_par",
+								"type": "Expression"
+							},
+							"ds_directory": {
+								"value": "@pipeline().parameters.directory_par",
+								"type": "Expression"
+							}
+						}
+					}
+				]
 			},
 			{
 				"name": "Set ultimo valor lido",
@@ -145,166 +217,6 @@
 				"userProperties": [],
 				"typeProperties": {
 					"waitTimeInSeconds": 1
-				}
-			},
-			{
-				"name": "Update_watermark",
-				"type": "Script",
-				"dependsOn": [],
-				"policy": {
-					"timeout": "0.12:00:00",
-					"retry": 0,
-					"retryIntervalInSeconds": 30,
-					"secureOutput": false,
-					"secureInput": false
-				},
-				"userProperties": [],
-				"typeProperties": {
-					"scripts": [
-						{
-							"type": "Query",
-							"text": {
-								"value": "update dbo.watermark\nset Last_Modified = '@{variables('max_valor_escrito')}'\nwhere table_name = '@{pipeline().parameters.table_name_par}'\n\n\n\n\n\n\n\n\n\n",
-								"type": "Expression"
-							}
-						}
-					],
-					"scriptBlockExecutionTimeout": "02:00:00"
-				}
-			},
-			{
-				"name": "If Condition1",
-				"type": "IfCondition",
-				"dependsOn": [
-					{
-						"activity": "Wait1",
-						"dependencyConditions": [
-							"Succeeded"
-						]
-					}
-				],
-				"userProperties": [],
-				"typeProperties": {
-					"expression": {
-						"value": "@equals(variables('Last_modified'),variables('max_valor_escrito'))",
-						"type": "Expression"
-					},
-					"ifFalseActivities": [
-						{
-							"name": "Copy data2",
-							"type": "Copy",
-							"dependsOn": [],
-							"policy": {
-								"timeout": "0.12:00:00",
-								"retry": 0,
-								"retryIntervalInSeconds": 30,
-								"secureOutput": false,
-								"secureInput": false
-							},
-							"userProperties": [],
-							"typeProperties": {
-								"source": {
-									"type": "AzureSqlSource",
-									"sqlReaderQuery": "select * from @{pipeline().parameters.schema_par}.@{pipeline().parameters.table_name_par} where ModifiedDate > '@{variables('last_modified')}'and ModifiedDate <= '@{variables('max_valor_escrito')}'",
-									"queryTimeout": "02:00:00",
-									"partitionOption": "None"
-								},
-								"sink": {
-									"type": "ParquetSink",
-									"storeSettings": {
-										"type": "AzureBlobFSWriteSettings"
-									},
-									"formatSettings": {
-										"type": "ParquetWriteSettings"
-									}
-								},
-								"enableStaging": false,
-								"translator": {
-									"type": "TabularTranslator",
-									"typeConversion": true,
-									"typeConversionSettings": {
-										"allowDataTruncation": true,
-										"treatBooleanAsNumber": false
-									}
-								}
-							},
-							"inputs": [
-								{
-									"referenceName": "AzureSqlTable",
-									"type": "DatasetReference"
-								}
-							],
-							"outputs": [
-								{
-									"referenceName": "Parquet",
-									"type": "DatasetReference"
-								}
-							]
-						},
-						{
-							"name": "Script1",
-							"type": "Script",
-							"dependsOn": [
-								{
-									"activity": "Copy data2",
-									"dependencyConditions": [
-										"Succeeded"
-									]
-								}
-							],
-							"policy": {
-								"timeout": "0.12:00:00",
-								"retry": 0,
-								"retryIntervalInSeconds": 30,
-								"secureOutput": false,
-								"secureInput": false
-							},
-							"userProperties": [],
-							"linkedServiceName": {
-								"referenceName": "AzureSqlDatabase",
-								"type": "LinkedServiceReference"
-							},
-							"typeProperties": {
-								"scripts": [
-									{
-										"type": "NonQuery",
-										"text": "set Last_Modified = '@{variables('max_valor_escrito')}'where table_name = '@{pipeline().parameters.table_name_par}'"
-									}
-								],
-								"scriptBlockExecutionTimeout": "02:00:00"
-							}
-						}
-					],
-					"ifTrueActivities": [
-						{
-							"name": "Web",
-							"type": "WebActivity",
-							"dependsOn": [],
-							"policy": {
-								"timeout": "0.12:00:00",
-								"retry": 0,
-								"retryIntervalInSeconds": 30,
-								"secureOutput": false,
-								"secureInput": false
-							},
-							"userProperties": [],
-							"typeProperties": {
-								"url": "https://prod-29.eastus2.logic.azure.com:443/workflows/59b225fd90e041a284b5cfa9b47155f3/triggers/manual/paths/invoke?api-version=2016-10-01&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=TVEHd2FUXKaaD87Gd-Gz52fYXyeo83iKuybqb0erMH8",
-								"method": "POST",
-								"headers": {
-									"1": "2"
-								},
-								"body": {
-									"RUN_ID": "@{pipeline().RunId}",
-									"TABLE_NAME": "@{pipeline().parameters.table_name_par}",
-									"TIMESTAMP": "@{utcnow()}",
-									"ERRODESCRIPTION": "NAO EXISTE NOVOS REGISTROS PARA ESTA TABELA",
-									"TO": "manfriniti@gmail.com",
-									"SUBJECT": "INGESTAO DIARIA"
-								}
-							}
-						}
-					]
 				}
 			}
 		],
