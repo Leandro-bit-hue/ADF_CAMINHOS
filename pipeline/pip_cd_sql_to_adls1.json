@@ -3,77 +3,6 @@
 	"properties": {
 		"activities": [
 			{
-				"name": "Copy data1",
-				"type": "Copy",
-				"dependsOn": [],
-				"policy": {
-					"timeout": "0.12:00:00",
-					"retry": 0,
-					"retryIntervalInSeconds": 30,
-					"secureOutput": false,
-					"secureInput": false
-				},
-				"userProperties": [],
-				"typeProperties": {
-					"source": {
-						"type": "AzureSqlSource",
-						"sqlReaderQuery": "select * from @{pipeline().parameters.schema_par}.@{pipeline().parameters.table_name_par} \r\nwhere ModifiedDate > '@{activity('LastModified').output.firstRow.last_Modified}' and ModifiedDate <= '@{activity('MaxDateModified').output.firstRow.ModifiedDate}'",
-						"queryTimeout": "02:00:00",
-						"partitionOption": "None"
-					},
-					"sink": {
-						"type": "ParquetSink",
-						"storeSettings": {
-							"type": "AzureBlobFSWriteSettings"
-						},
-						"formatSettings": {
-							"type": "ParquetWriteSettings"
-						}
-					},
-					"enableStaging": false,
-					"translator": {
-						"type": "TabularTranslator",
-						"typeConversion": true,
-						"typeConversionSettings": {
-							"allowDataTruncation": true,
-							"treatBooleanAsNumber": false
-						}
-					}
-				},
-				"inputs": [
-					{
-						"referenceName": "AzureSqlTable",
-						"type": "DatasetReference",
-						"parameters": {
-							"ds_name_table": {
-								"value": "@pipeline().parameters.table_name_par",
-								"type": "Expression"
-							},
-							"ds_schema_table": {
-								"value": "@pipeline().parameters.schema_par",
-								"type": "Expression"
-							}
-						}
-					}
-				],
-				"outputs": [
-					{
-						"referenceName": "Parquet",
-						"type": "DatasetReference",
-						"parameters": {
-							"ds_container": {
-								"value": "@pipeline().parameters.container_par",
-								"type": "Expression"
-							},
-							"ds_directory": {
-								"value": "@pipeline().parameters.directory_par",
-								"type": "Expression"
-							}
-						}
-					}
-				]
-			},
-			{
 				"name": "LastModified",
 				"type": "Lookup",
 				"dependsOn": [],
@@ -88,7 +17,10 @@
 				"typeProperties": {
 					"source": {
 						"type": "AzureSqlSource",
-						"sqlReaderQuery": "select isnull(last_Modified,'1900-01-01 00:00:00.000') as last_Modified from dbo.watermark where table_name = '@{pipeline().parameters.table_name_par}'",
+						"sqlReaderQuery": {
+							"value": "select isnull(last_Modified,'1900-01-01') as last_Modified\n from dbo.watermark where table_name = \n '@{pipeline().parameters.table_name_par}'",
+							"type": "Expression"
+						},
 						"queryTimeout": "02:00:00",
 						"partitionOption": "None"
 					},
@@ -123,7 +55,10 @@
 				"typeProperties": {
 					"source": {
 						"type": "AzureSqlSource",
-						"sqlReaderQuery": "SELECT max(ModifiedDate) as ModifiedDate  FROM @{pipeline().parameters.schema_par}.@{pipeline().parameters.table_name_par}",
+						"sqlReaderQuery": {
+							"value": "SELECT max(ModifiedDate) as ModifiedDate\n  FROM @{pipeline().parameters.schema_par}.\n@{pipeline().parameters.table_name_par}",
+							"type": "Expression"
+						},
 						"queryTimeout": "02:00:00",
 						"partitionOption": "None"
 					},
@@ -163,32 +98,6 @@
 				"userProperties": [],
 				"typeProperties": {
 					"waitTimeInSeconds": 1
-				}
-			},
-			{
-				"name": "Uptade_watermark",
-				"type": "Script",
-				"dependsOn": [],
-				"policy": {
-					"timeout": "0.12:00:00",
-					"retry": 0,
-					"retryIntervalInSeconds": 30,
-					"secureOutput": false,
-					"secureInput": false
-				},
-				"userProperties": [],
-				"linkedServiceName": {
-					"referenceName": "AzureSqlDatabase",
-					"type": "LinkedServiceReference"
-				},
-				"typeProperties": {
-					"scripts": [
-						{
-							"type": "NonQuery",
-							"text": "update dbo.watermark\nset last_Modified = '@{variables('max_valor_escrito')}'\nwhere table_name = '@{pipeline().parameters.table_name_par}'"
-						}
-					],
-					"scriptBlockExecutionTimeout": "02:00:00"
 				}
 			},
 			{
@@ -304,7 +213,10 @@
 								"scripts": [
 									{
 										"type": "NonQuery",
-										"text": "update dbo.watermarkset last_Modified = '@{variables('max_valor_escrito')}'where table_name = '@{pipeline().parameters.table_name_par}'"
+										"text": {
+											"value": "update dbo.watermarkset last_Modified = '@{variables('max_valor_escrito')}'\nwhere table_name = '@{pipeline().parameters.table_name_par}'",
+											"type": "Expression"
+										}
 									}
 								],
 								"scriptBlockExecutionTimeout": "02:00:00"
@@ -333,7 +245,7 @@
 			}
 		},
 		"variables": {
-			"last_modified": {
+			"last_Modified": {
 				"type": "String"
 			},
 			"max_valor_escrito": {
