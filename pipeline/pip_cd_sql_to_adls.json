@@ -244,12 +244,6 @@
 			},
 			"max_valor_escrito": {
 				"type": "String"
-			},
-			"last_modified": {
-				"type": "String"
-			},
-			"max_valor_esxcrito": {
-				"type": "String"
 			}
 		},
 		"annotations": []
