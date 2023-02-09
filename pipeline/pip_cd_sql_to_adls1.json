@@ -240,7 +240,7 @@
 								"url": "https://prod-52.eastus2.logic.azure.com:443/workflows/8da048ef57fc465cb9a92d79930ba4c2/triggers/manual/paths/invoke?api-version=2016-10-01&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=cT528SWb3P00mXZFDA8wZN6mSGjHG6nvhwK-w6WXsVE",
 								"method": "POST",
 								"body": {
-									"value": "{\"RUN_ID\":\"@{pipeline().RunId}\",\n\"TABLE_NAME\":\"@{pipeline().parameters.table_name_par}\",\n\"TIMESTAMP\":\"@{utcnow()}\",\n\"ERRODESCRIPTION\":\"NAO EXISTE NOVOS REGISTROS PARA ESTA TABELA\",\n\"TO\":\"l.monfrini.de.arruda@avanade.com\",\n\"SUBJECT\":\"INGESTAO DIARIA\"}",
+									"value": "{\"RUN_ID\":\"@{pipeline().RunId}\",\"TABLE_NAME\":\"@{pipeline().parameters.table_name_par}\",\"TIMESTAMP\":\"@{utcnow()}\",\"ERRODESCRIPTION\":\"NAO EXISTE NOVOS REGISTROS PARA ESTA TABELA\",\"TO\":\"l.monfrini.de.arruda@avanade.com\",\"SUBJECT\":\"INGESTAO DIARIA\"}",
 									"type": "Expression"
 								}
 							}
