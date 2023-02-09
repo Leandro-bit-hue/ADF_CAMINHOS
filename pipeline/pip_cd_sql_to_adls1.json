@@ -5,14 +5,7 @@
 			{
 				"name": "Copy data1",
 				"type": "Copy",
-				"dependsOn": [
-					{
-						"activity": "Wait1",
-						"dependencyConditions": [
-							"Succeeded"
-						]
-					}
-				],
+				"dependsOn": [],
 				"policy": {
 					"timeout": "0.12:00:00",
 					"retry": 0,
@@ -24,7 +17,7 @@
 				"typeProperties": {
 					"source": {
 						"type": "AzureSqlSource",
-						"sqlReaderQuery": "select * from @{pipeline().parameters.schema_par}.@{pipeline().parameters.table_name_par} \r\nwhere ModifiedDate > '@{activity('LastModified').output.firstRow.Last_Modified}' and ModifiedDate <= '@{activity('MaxDateModified').output.firstRow.ModifiedDate}'",
+						"sqlReaderQuery": "select * from @{pipeline().parameters.schema_par}.@{pipeline().parameters.table_name_par} \r\nwhere ModifiedDate > '@{activity('LastModified').output.firstRow.last_Modified}' and ModifiedDate <= '@{activity('MaxDateModified').output.firstRow.ModifiedDate}'",
 						"queryTimeout": "02:00:00",
 						"partitionOption": "None"
 					},
@@ -198,11 +191,130 @@
 				"typeProperties": {
 					"scripts": [
 						{
-							"type": "Query",
-							"text": "update dbo.watermark\nset Last_Modified = '@{variables('max_valor_escrito')}'\nwhere table_name = '@{pipeline().parameters.table_name_par}'"
+							"type": "NonQuery",
+							"text": "update dbo.watermark\nset last_Modified = '@{variables('max_valor_escrito')}'\nwhere table_name = '@{pipeline().parameters.table_name_par}'"
 						}
 					],
 					"scriptBlockExecutionTimeout": "02:00:00"
+				}
+			},
+			{
+				"name": "If Condition1",
+				"type": "IfCondition",
+				"dependsOn": [
+					{
+						"activity": "Wait1",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"userProperties": [],
+				"typeProperties": {
+					"expression": {
+						"value": "@equals(variables('last_modified'), variables('max_valor_escrito'))",
+						"type": "Expression"
+					},
+					"ifFalseActivities": [
+						{
+							"name": "Copy data2",
+							"type": "Copy",
+							"dependsOn": [],
+							"policy": {
+								"timeout": "0.12:00:00",
+								"retry": 0,
+								"retryIntervalInSeconds": 30,
+								"secureOutput": false,
+								"secureInput": false
+							},
+							"userProperties": [],
+							"typeProperties": {
+								"source": {
+									"type": "AzureSqlSource",
+									"sqlReaderQuery": "[2:59 PM] Lukas Matheus Leite De Souza\r\nselect * from @{pipeline().parameters.schema_par}.@{pipeline().parameters.table_name_par} where ModifiedDate > '@{variables('last_modified')}'and ModifiedDate <= '@{variables('max_valor_escrito')}'",
+									"queryTimeout": "02:00:00",
+									"partitionOption": "None"
+								},
+								"sink": {
+									"type": "ParquetSink",
+									"storeSettings": {
+										"type": "AzureBlobFSWriteSettings"
+									},
+									"formatSettings": {
+										"type": "ParquetWriteSettings"
+									}
+								},
+								"enableStaging": false,
+								"translator": {
+									"type": "TabularTranslator",
+									"typeConversion": true,
+									"typeConversionSettings": {
+										"allowDataTruncation": true,
+										"treatBooleanAsNumber": false
+									}
+								}
+							},
+							"inputs": [
+								{
+									"referenceName": "AzureSqlTable",
+									"type": "DatasetReference",
+									"parameters": {
+										"ds_name_table": "Product",
+										"ds_schema_table": "salesLT"
+									}
+								}
+							],
+							"outputs": [
+								{
+									"referenceName": "Parquet",
+									"type": "DatasetReference",
+									"parameters": {
+										"ds_container": {
+											"value": "@pipeline().parameters.container_par",
+											"type": "Expression"
+										},
+										"ds_directory": {
+											"value": "@pipeline().parameters.directory_par",
+											"type": "Expression"
+										}
+									}
+								}
+							]
+						},
+						{
+							"name": "Update_watermark",
+							"type": "Script",
+							"dependsOn": [
+								{
+									"activity": "Copy data2",
+									"dependencyConditions": [
+										"Succeeded"
+									]
+								}
+							],
+							"policy": {
+								"timeout": "0.12:00:00",
+								"retry": 0,
+								"retryIntervalInSeconds": 30,
+								"secureOutput": false,
+								"secureInput": false
+							},
+							"userProperties": [],
+							"linkedServiceName": {
+								"referenceName": "AzureSqlDatabase",
+								"type": "LinkedServiceReference"
+							},
+							"typeProperties": {
+								"scripts": [
+									{
+										"type": "NonQuery",
+										"text": "update dbo.watermarkset Last_Modified = '@{variables('max_valor_escrito')}'where table_name = '@{pipeline().parameters.table_name_par}'"
+									}
+								],
+								"scriptBlockExecutionTimeout": "02:00:00"
+							}
+						}
+					]
 				}
 			}
 		],
@@ -228,7 +340,7 @@
 			"last_modified": {
 				"type": "String"
 			},
-			"max_valor_esxcrito": {
+			"max_valor_escrito": {
 				"type": "String"
 			}
 		},
