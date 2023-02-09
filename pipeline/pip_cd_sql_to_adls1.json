@@ -24,7 +24,7 @@
 				"typeProperties": {
 					"source": {
 						"type": "AzureSqlSource",
-						"sqlReaderQuery": "select * from @{pipeline().parameters.schema_par}.@{pipeline().parameters.table_name_par} \r\nwhere ModifiedDate > '@{activity('LastModified').output.firstRow}' and ModifiedDate <= '@{activity('MaxDateModified').output.firstRow.ModifiedDate}'\r\n",
+						"sqlReaderQuery": "select * from @{pipeline().parameters.schema_par}.@{pipeline().parameters.table_name_par} \r\nwhere ModifiedDate > '@{activity('LastModified').output.firstRow.Last_Modified}' and ModifiedDate <= '@{activity('MaxDateModified').output.firstRow.ModifiedDate}'",
 						"queryTimeout": "02:00:00",
 						"partitionOption": "None"
 					},
