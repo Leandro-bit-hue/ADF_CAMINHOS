@@ -231,7 +231,10 @@
 							"typeProperties": {
 								"source": {
 									"type": "AzureSqlSource",
-									"sqlReaderQuery": "[2:59 PM] Lukas Matheus Leite De Souza\r\nselect * from @{pipeline().parameters.schema_par}.@{pipeline().parameters.table_name_par} where ModifiedDate > '@{variables('last_modified')}'and ModifiedDate <= '@{variables('max_valor_escrito')}'",
+									"sqlReaderQuery": {
+										"value": "select * from @{pipeline().parameters.schema_par}.@{pipeline().parameters.table_name_par} where ModifiedDate > '@{variables('last_Modified')}'and ModifiedDate <= '@{variables('max_valor_escrito')}'",
+										"type": "Expression"
+									},
 									"queryTimeout": "02:00:00",
 									"partitionOption": "None"
 								},
@@ -308,7 +311,7 @@
 								"scripts": [
 									{
 										"type": "NonQuery",
-										"text": "update dbo.watermarkset Last_Modified = '@{variables('max_valor_escrito')}'where table_name = '@{pipeline().parameters.table_name_par}'"
+										"text": "update dbo.watermarkset last_Modified = '@{variables('max_valor_escrito')}'where table_name = '@{pipeline().parameters.table_name_par}'"
 									}
 								],
 								"scriptBlockExecutionTimeout": "02:00:00"
