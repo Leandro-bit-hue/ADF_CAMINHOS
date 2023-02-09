@@ -54,7 +54,7 @@
 					"source": {
 						"type": "AzureSqlSource",
 						"sqlReaderQuery": {
-							"value": "SELECT max(ModifiedDate) as ModifiedDate  FROM @{pipeline().parameters.schema_par}.@{pipeline().parameters.table_name_par}",
+							"value": "SELECT max(ModifiedDate) as ModifiedDate  FROM @{pipeline().parameters.schema_par}.@{pipeline().parameters.table_name_par}has context menuComposeParagraph",
 							"type": "Expression"
 						},
 						"queryTimeout": "02:00:00",
