@@ -214,7 +214,7 @@
 									{
 										"type": "NonQuery",
 										"text": {
-											"value": "update dbo.watermark set last_Modified = '@{variables('max_valor_escrito')}'\nwhere table_name = '@{pipeline().parameters.table_name_par}'",
+											"value": "update dbo.watermark set last_Modified = '@{activity('MaxDateModified').output.firstRow.ModifiedDate}'\nwhere table_name = '@{pipeline().parameters.table_name_par}'",
 											"type": "Expression"
 										}
 									}
@@ -240,7 +240,7 @@
 								"url": "https://prod-20.westus2.logic.azure.com:443/workflows/7f650136cac14c1fb39dacacb8d9f50c/triggers/manual/paths/invoke?api-version=2016-10-01&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=ePt1J5kQuoIDzMDm1SYdtvClJ2wKVjt7LIwaiQtUFz4",
 								"method": "POST",
 								"body": {
-									"value": "{\"RUN_ID\":\"@{pipeline().RunId}\",\n\"TABLE_NAME\":\"@{pipeline().parameters.table_name_par}\",\n\"TIMESTAMP\":\"@{utcnow()}\",\n\"ERRODESCRIPTION\":\"NAO EXISTE NOVOS REGISTROS PARA ESTA TABELA\",\n\"TO\":\"manfriniti@gmail.com\",\n\"SUBJECT\":\"INGESTAO DIARIA\"}",
+									"value": "{\"RUN_ID\":\"@{pipeline().RunId}\",\n\"TABLE_NAME\":\"@{pipeline().parameters.table_name_par}\",\n\"TIMESTAMP\":\"@{utcnow()}\",\n\"ERRODESCRIPTION\":\"NAO EXISTE NOVOS REGISTROS PARA ESTA TABELA\",\n\"TO\":\"manfriniti@gmail.com\",\n\"SUBJECT\":\"INGESTAO DIARIA\"}\n\n",
 									"type": "Expression"
 								}
 							}
