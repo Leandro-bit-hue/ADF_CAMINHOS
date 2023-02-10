@@ -8,7 +8,7 @@
 				"dependsOn": [],
 				"userProperties": [],
 				"typeProperties": {
-					"variableName": "array",
+					"variableName": "Tables_Load_Incremental",
 					"value": "[\"Address\",\"Product\",\"Customer\",\"CustomerAddress\",\"Product\",\"ProductCategory\",\"ProductDescription\",\"ProductModel\",\"ProductModelProductDescription\",\"SalesOrderDetail\",SalesOrderHeader\"]"
 				}
 			},
@@ -51,6 +51,50 @@
 					},
 					"firstRowOnly": false
 				}
+			},
+			{
+				"name": "ForEach1",
+				"type": "ForEach",
+				"dependsOn": [
+					{
+						"activity": "Lookup1",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"userProperties": [],
+				"typeProperties": {
+					"items": {
+						"value": "@activity('Lookup1').output.value",
+						"type": "Expression"
+					},
+					"activities": [
+						{
+							"name": "If Condition1",
+							"type": "IfCondition",
+							"dependsOn": [],
+							"userProperties": [],
+							"typeProperties": {
+								"expression": {
+									"value": "@contains(variables('Tables_Load_Incremental'), item().table_name)",
+									"type": "Expression"
+								},
+								"ifTrueActivities": [
+									{
+										"name": "Execute Pipeline1",
+										"type": "ExecutePipeline",
+										"dependsOn": [],
+										"userProperties": [],
+										"typeProperties": {
+											"waitOnCompletion": true
+										}
+									}
+								]
+							}
+						}
+					]
+				}
 			}
 		],
 		"parameters": {
@@ -68,8 +112,9 @@
 			}
 		},
 		"variables": {
-			"array": {
-				"type": "String"
+			"Tables_Load_Incremental": {
+				"type": "String",
+				"defaultValue": "table_name"
 			}
 		},
 		"annotations": []
