@@ -87,7 +87,29 @@
 										"dependsOn": [],
 										"userProperties": [],
 										"typeProperties": {
-											"waitOnCompletion": true
+											"pipeline": {
+												"referenceName": "pip_cd_sql_to_adls",
+												"type": "PipelineReference"
+											},
+											"waitOnCompletion": true,
+											"parameters": {
+												"schema_par": {
+													"value": "@pipeline().parameters.schema_par",
+													"type": "Expression"
+												},
+												"table_name_par": {
+													"value": "@item().table_name",
+													"type": "Expression"
+												},
+												"container_par": {
+													"value": "@pipeline().parameters.container_par",
+													"type": "Expression"
+												},
+												"directory_par": {
+													"value": "@pipeline().parameters.directory_par",
+													"type": "Expression"
+												}
+											}
 										}
 									}
 								]
