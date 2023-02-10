@@ -1,0 +1,23 @@
+{
+	"name": "pipeline5",
+	"properties": {
+		"activities": [
+			{
+				"name": "Set variable1",
+				"type": "SetVariable",
+				"dependsOn": [],
+				"userProperties": [],
+				"typeProperties": {
+					"variableName": "array",
+					"value": "[\"Address\",\"Product\",\"Customer\",\"CustomerAddress\",\"Product\",\"ProductCategory\",\"ProductDescription\",\"ProductModel\",\"ProductModelProductDescription\",\"SalesOrderDetail\",SalesOrderHeader\"]"
+				}
+			}
+		],
+		"variables": {
+			"array": {
+				"type": "String"
+			}
+		},
+		"annotations": []
+	}
+}
