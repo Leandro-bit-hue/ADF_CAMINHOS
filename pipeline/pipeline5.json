@@ -11,8 +11,62 @@
 					"variableName": "array",
 					"value": "[\"Address\",\"Product\",\"Customer\",\"CustomerAddress\",\"Product\",\"ProductCategory\",\"ProductDescription\",\"ProductModel\",\"ProductModelProductDescription\",\"SalesOrderDetail\",SalesOrderHeader\"]"
 				}
+			},
+			{
+				"name": "Lookup1",
+				"type": "Lookup",
+				"dependsOn": [
+					{
+						"activity": "Set variable1",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"policy": {
+					"timeout": "0.12:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"source": {
+						"type": "AzureSqlSource",
+						"sqlReaderQuery": {
+							"value": "select table_name from INFORMATION_SCHEMA.TABLES where table_schema = '@{pipeline().parameters.schema_par}' and TABLE_TYPE = 'BASE TABLE';",
+							"type": "Expression"
+						},
+						"queryTimeout": "02:00:00",
+						"partitionOption": "None"
+					},
+					"dataset": {
+						"referenceName": "AzureSqlTable",
+						"type": "DatasetReference",
+						"parameters": {
+							"ds_name_table": "Product",
+							"ds_schema_table": "salesLT"
+						}
+					},
+					"firstRowOnly": false
+				}
 			}
 		],
+		"parameters": {
+			"schema_par": {
+				"type": "string",
+				"defaultValue": "salesLT"
+			},
+			"container_par": {
+				"type": "string",
+				"defaultValue": "landing"
+			},
+			"directory_par": {
+				"type": "string",
+				"defaultValue": "adventureworks"
+			}
+		},
 		"variables": {
 			"array": {
 				"type": "String"
