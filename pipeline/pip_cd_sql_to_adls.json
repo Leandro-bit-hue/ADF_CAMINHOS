@@ -179,7 +179,7 @@
 											"type": "Expression"
 										},
 										"ds_directory": {
-											"value": "@pipeline().parameters.directory_par",
+											"value": "@concat(pipeline().parameters.directory_par,pipeline().parameters.table_name_par)",
 											"type": "Expression"
 										}
 									}
@@ -263,8 +263,7 @@
 				"defaultValue": "landing"
 			},
 			"directory_par": {
-				"type": "string",
-				"defaultValue": "adventureworks/Product/parquet"
+				"type": "string"
 			}
 		},
 		"variables": {
@@ -273,6 +272,10 @@
 			},
 			"max_valor_escrito": {
 				"type": "String"
+			},
+			"Tables_Load_Incremental": {
+				"type": "String",
+				"defaultValue": "table_name"
 			}
 		},
 		"annotations": []
