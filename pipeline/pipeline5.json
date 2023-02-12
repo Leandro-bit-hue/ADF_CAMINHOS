@@ -119,7 +119,7 @@
 				}
 			},
 			{
-				"name": "Execute Pipeline2",
+				"name": "Databricks",
 				"type": "ExecutePipeline",
 				"dependsOn": [
 					{
@@ -132,7 +132,7 @@
 				"userProperties": [],
 				"typeProperties": {
 					"pipeline": {
-						"referenceName": "pipeline6",
+						"referenceName": "pip-desafio-adf-databricks",
 						"type": "PipelineReference"
 					},
 					"waitOnCompletion": true
