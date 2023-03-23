@@ -1,0 +1,9 @@
+{
+	"name": "adf-desafio-leandro",
+	"location": "eastus2",
+	"identity": {
+		"type": "SystemAssigned",
+		"principalId": "27cc8048-3607-4b5b-a773-3d3d56027915",
+		"tenantId": "55585a9a-2359-481c-8a45-0b8d82883f25"
+	}
+}
